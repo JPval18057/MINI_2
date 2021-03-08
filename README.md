@@ -5,4 +5,4 @@ Se utilizó un microcontrolador PIC16F887, un ESP32, luces LED azules de 3mm, re
 
 La función del proyecto es leer los datos del sensor con el PIC, luego mandarlos al ESP32 y el ESP32 los envía al servidor de adafruit. En el servidor hay una interfaz que el usuario modifica mediante la página web de adafruit. El usuario puede encender luces desde la página web y ver las mediciones de los sensores.
 
-En esta ocasión se configuró el PIC para funcionar a 3V para evitar usar el conversor bidireccional.
+En esta ocasión se configuró el PIC para funcionar a 3V para evitar usar el conversor bidireccional. La hoja de datos del PIC establece que el PIC funciona a ese voltaje si se trabaja con frecuencias menores a 8MHz, éste es el máximo absoluto. En este proyecto se trabajó a 4MHz para estar en un margen cómodo.
