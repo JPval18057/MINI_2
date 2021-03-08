@@ -233,165 +233,33 @@ void main(void) {
 
         //ACTUALIZAR PUERTO B
         //----------------------------------------------------------------------
-        /*
-        PORTBbits.RB0 = led0;
-        PORTBbits.RB1 = led1;
-        PORTBbits.RB2 = led2;
-         */
+        
         PORTB = led0;
         //----------------------------------------------------------------------
     }
     return;
 }
 
-void IIC(void){
-    //The 7-bit device address is 111011x
-    //To select I2C CSB must be at 1 or 3V
-    //PIC CONFIG
-    sensor_dir = 0b1110110; //el último bit es para R/W
-    SSPADD = 9; //PARA UN RELOJ DE 100KHz con reloj de 4MHz
-    SSPSTATbits.SMP = 1 ; //ES 0 PARA 400Hz de clock y 1 para 100kHz y 1MHz
-    SSPCON = 0b00101000; //IIC MASTER MODE ENABLED
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //Esperamos a que la bandera se encienda
-    //CONFIGURACION MAESTRO
-    config_sensor(); //configuración del sensor
-    //DESACTIVAR INTERRUPCIONES
-    PIE1bits.SSPIE=1;
-    /*
-     * TO DO LIST:
-     * CONFIGURE IIC IN PIC
-     * SEND CONFIGURATION TO SENSOR ONLY ONCE IN SETUP
-     * READ THE SENSOR EVERY 100ms
-     * FOR TESTING PURPOSES JUST READ TEMP
-     */
-    return;
-}
-
-void config_sensor(void){
-    //ESCRIBIMOS AL REGISTRO CRTL_MEA
-    //ctrl_meas = 0b00101111; para modo standard normal
-    //ctrl_mea = 0xF4
-    enviar(0b00101111,0xF4); //leemos presión y temperatura
-    //enviamos la configuración para modo estándar
-    return;
-}
 
 
-void enviar(char dato, char reg){
-    //APAGAMOS EL READ MODE POR SI ACASO
-    SSPCON2bits.RCEN = 0;
-    
-    
-    //SI RW ES 0 ENTONCES ESCRIBIMOS
-    char temp;
-    //INICIAMOS LA SECUENCIA DE INICIO
-    SSPCON2bits.SEN = 1;
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    
-    //PRIMERO MANDAMOS LA DIRECCION
-    temp = sensor_dir & 0b11111110;//FORZAMOS EL BIT0 A 0
-    SSPBUF = temp;
-    //ESPERAMOS EL ACKNOWLEDGE
-    while (SSPCON2bits.ACKSTAT==1);
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    
-    //DESPUÉS ESCRIBIMOS EL REGISTRO AL CUAL QUEREMOS ESCRIBIR
-    SSPBUF = reg;
-    //ESPERAMOS EL ACKNOWLEDGE
-    while (SSPCON2bits.ACKSTAT==1);
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    
-    //LUEGO ESCRIBIMOS EL DATO
-    SSPBUF = dato;
-    //ESPERAMOS EL ACKNOWLEGDE
-    while (SSPCON2bits.ACKSTAT==1);
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    
-    //TERMINAMOS LA COMUNICACION
-    SSPCON2bits.PEN = 1; //INICIA SECUENCIA DE FINAL
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    
-    return ;
-}
 
-unsigned int leer(char dir){            //LEER UN SOLO BYTE A LA VEZ
-    //LEEMOS BYTE POR BYTE
-    char dato;
-    char temp;
-    //INICIAMOS LA SECUENCIA DE INICIO
-    SSPCON2bits.SEN = 1;
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    
-    //PRIMERO MANDAMOS LA DIRECCION
-    temp = sensor_dir & 0b11111110;//FORZAMOS EL BIT0 A 0
-    SSPBUF = temp;
-    //ESPERAMOS EL ACKNOWLEDGE
-    while (SSPCON2bits.ACKSTAT==1);
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    
-    //ESCRIBIMOS LA DIRECCIÓN DEL REGISTRO QUE QUEREMOS LEER
-    while (SSPSTATbits.READ_WRITE==1); //ESPERAMOS A QUE LA TRANSMISIÓN TERMINE
-    SSPBUF = dir;
-    
-    //ESPERAMOS EL ACKNOWLEDGE
-    while (SSPCON2bits.ACKSTAT==1);
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    while (SSPSTATbits.READ_WRITE==1); //ESPERAMOS A QUE LA TRANSMISIÓN TERMINE
-    
-    //LEEMOS
-    
-    //INICIAMOS REPEATED START CONDITION
-    SSPCON2bits.RSEN =1;
-    while (SSPCON2bits.RSEN ==1); //ESPERAMOS A QUE TERMINE
-    //DIRECCION DEL DISPOSITIVO EN READ MODE
-    temp = sensor_dir | 0b00000001;//FORZAMOS EL BIT0 A 1
-    SSPBUF = temp;
-    
-    //ESPERAMOS EL ACKNOWLEDGE
-    while (SSPCON2bits.ACKSTAT==1);
-    
-    //MASTER READ MODE
-    SSPCON2bits.RCEN = 1;
-    
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    while (SSPSTATbits.READ_WRITE==1); //ESPERAMOS A QUE LA TRANSMISIÓN TERMINE
-    
-    
-    //LEEMOS EL REGISTRO
-    while (SSPSTATbits.BF==1); //ESPERAMOS A QUE ENTRE EL BYTE
-    dato = SSPBUF;
-    //CANCELAMOS LA TRANSMISION
-    SSPCON2bits.ACKEN = 0; //NO LE MANDAMOS ACKNOWLEDGE
-    SSPCON2bits.PEN = 1; //INICIAMOS STOP CONDITION
-    
-    //ESPERAMOS LA BANDERA
-    //while (PIR1bits.SSPIF==0);
-    //PIR1bits.SSPIF = 0; //APAGAMOS LA BANDERA
-    
-    //APAGAMOS EL READ MODE
-    SSPCON2bits.RCEN = 0;
-    
-    return dato;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
  * REGISTROS DEL SENSOR
