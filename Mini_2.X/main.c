@@ -1,10 +1,12 @@
 /*
- * File:   main.c
- * Author: cabal
- *
- * Created on 4 de marzo de 2021, 04:33 PM
+ * UNIVERSIDAD DEL VALLE DE GUATEMALA
+ * DEPARTAMENTO DE ELECTRÓNICA
+ * ELECTRÓNICA DIGITAL II
+ * PROFESOR: KURT KELLNER
+ * MINI PROYECTO 2: INTERCONEXIÓN ESP CON PIC
+ * AUTOR : JUAN PABLO VALENZUELA
+ * 
  */
-
 // PIC16F887 Configuration Bit Settings
 
 // 'C' source line config statements
