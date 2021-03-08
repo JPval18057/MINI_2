@@ -1,14 +1,12 @@
-// Adafruit IO Publish Example
-//
-// Adafruit invests time and resources providing this open source code.
-// Please support Adafruit and open source hardware by purchasing
-// products from Adafruit!
-//
-// Written by Todd Treece for Adafruit Industries
-// Copyright (c) 2016 Adafruit Industries
-// Licensed under the MIT license.
-//
-// All text above must be included in any redistribution.
+//*
+ * UNIVERSIDAD DEL VALLE DE GUATEMALA
+ * DEPARTAMENTO DE ELECTRÓNICA
+ * ELECTRÓNICA DIGITAL II
+ * PROFESOR: KURT KELLNER
+ * MINI PROYECTO 2: INTERCONEXIÓN ESP CON PIC
+ * AUTOR : JUAN PABLO VALENZUELA
+ * 
+ */
 
 /************************** Configuration ***********************************/
 
