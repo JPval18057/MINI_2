@@ -180,6 +180,10 @@ void main(void) {
         //----------------------------------------------------------------------
             //MANDAR POR EUSART CADA 100ms
         TXREG = TEMP_LSB;
+        __delay_us(10);
+        TXREG = TEMP_MSB;
+        __delay_us(10);
+        TXREG = TEMP_XLSB;
 
         //----------------------------------------------------------------------
         
@@ -219,7 +223,9 @@ void main(void) {
             led1 = 0;
             led2 = 0;
         }
+        
         //tests
+        //----------------------------------------------------------------------
         I2C_Master_Start();         //Start condition
         I2C_Master_Write(0b11101100);     //7 bit address + Write
         I2C_Master_Write(0xD0);    //Write register adress
@@ -228,6 +234,28 @@ void main(void) {
         I2C_Master_Start();         //Start condition
         I2C_Master_Write(0b11101101);     //7 bit address + Read
         TEMP_LSB = I2C_Master_Read(0); //Read + Acknowledge
+        I2C_Master_Stop();          //Stop condition
+        __delay_ms(200);
+        
+        I2C_Master_Start();         //Start condition
+        I2C_Master_Write(0b11101100);     //7 bit address + Write
+        I2C_Master_Write(0xFA);    //Write register adress
+        I2C_Master_Stop();          //Stop condition
+        __delay_ms(200);
+        I2C_Master_Start();         //Start condition
+        I2C_Master_Write(0b11101101);     //7 bit address + Read
+        TEMP_MSB = I2C_Master_Read(0); //Read + Acknowledge
+        I2C_Master_Stop();          //Stop condition
+        __delay_ms(200);
+        
+        I2C_Master_Start();         //Start condition
+        I2C_Master_Write(0b11101100);     //7 bit address + Write
+        I2C_Master_Write(0xFC);    //Write register adress
+        I2C_Master_Stop();          //Stop condition
+        __delay_ms(200);
+        I2C_Master_Start();         //Start condition
+        I2C_Master_Write(0b11101101);     //7 bit address + Read
+        TEMP_XLSB = I2C_Master_Read(0); //Read + Acknowledge
         I2C_Master_Stop();          //Stop condition
         __delay_ms(200);
 
@@ -261,30 +289,3 @@ void main(void) {
 
 
 
-/*
- * REGISTROS DEL SENSOR
- * DIRECCION - REGISTRO
- * 0xFC         TEMP_XLSB
- * 0xFB         TEMP_LSB
- * 0xFA         TEMP_MSB
- * 0xF9         PRES_XLSB
- * 0xF8         PRES_LSB
- * 0xF7         PRES_MSB
- * 0xF4         CTRL_MEAS
- * 
- * PARA LEER:
- * char PRES_XLSB;
- * char PRES_LSB;
- * char PRES_MSB;
- * PRES_XLSB = leer(0xF9);
- * PRES_LSB = leer(0xF8);
- * PRES_MSB = leer(0xF7);
- * LUEGO PROCESARLO EN EL ESP
- * 
- * CTRL MEAS SIRVE PARA CONFIGURAR LA PRESICION
- * Temperature - PRESSURE - t
- * x1               x4      11 (normal mode)
- * 001              011     11
- * ctrl_meas = 0b00101111; para modo standard normal (posiblemente no sea necesario ajustar)
- * read every 100ms to be safe, can be more
- */
