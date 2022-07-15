@@ -1,0 +1,63 @@
+//PSEUDOCODIGO PARA EL ESP32
+
+#include "config.h" //acá se pone la contraseña y demás cosas para conectarse al servidor
+
+SETUP:
+SERIAL.BEGIN(9600);
+WAIT();//ESPERAMOS A QUE SE TERMINE DE CONFIGURAR
+
+io.config(); //INICIALIZAMOS LA CONEXIÓN AL SERVIDOR
+io.connect();//CONECTAMOS EL ESP AL SERVIDOR
+io.wait();//ESPERAMOS QUE SE CONECTE
+pinMODE(LEDBUILTIN, OUTPUT); //CONECTAMOS LA LUZ DE LA PLACA PARA MOSTRAR QUE SE CONECTÓ
+
+//ACÁ SOLO ASIGNAMOS CADA INTERRUPCION A UNA VARIABLE DISTINTA
+LED0->handle_message();
+LED0->get();
+LED1->handle_message();
+LED1->get();
+LED2->handle_message();
+LED2->get();
+
+
+
+
+LOOP:
+
+io.run();//NOS CONECTAMOS AL SERVIDOR PARA ENVIAR/RECIBIR DATOS
+
+//ACÁ LEEMOS EL DATO
+if (Serial.available()){
+DATA_IN = SERIAL.READ(); //LEEMOS EL DATO QUE ENTRÓ POR EUSART
+digitalWrite(LEDBUILTIN, LOW);
+delay(6); //DELAY DE 6ms por si acaso
+}
+
+//ahora tenemos el selector de "comandos"
+//SELECCIONAMOS QUE CARACTER MANDAR AL PIC PARA QUE ENCIENDA UNA LUZ
+if (led_0=="ON0"){
+    envio = 0x0A;
+  }
+  if (led_0=="OFF0"){
+    envio = 0xFA;
+  }
+  if (led_0=="ON1"){
+    envio = 0x0B;
+  }
+  if (led_0=="OFF1"){
+    envio = 0xFB;
+  }
+  if (led_0=="ON2"){
+    envio = 0x0C;
+  }
+  if (led_0=="OFF2"){
+    envio = 0xFC;
+  }
+
+//enviamos el dato
+
+Serial.write(envio);
+
+
+MESSAGEHANDLER: //ES UNA ESPECIE DE INTERRUPCIÓN CUANDO LE LLEGAN MENSAJES DEL SERVIDOR
+led_0 = data->value(); //obtenemos el mensaje que se recuperó del servidor
