@@ -1,8 +1,8 @@
 /*
  * File:   main.c
- * Author: cabal
- *
- * Created on 4 de marzo de 2021, 04:33 PM
+ * Author: Juan Pablo Valenzuela
+ * Description: This is a weather station project that monitors air pressure and temperature.
+ * Created on march 4th 2021, 04:33 PM
  */
 
 // PIC16F887 Configuration Bit Settings
